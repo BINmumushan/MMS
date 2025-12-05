@@ -260,7 +260,7 @@ public class Main {
     // Interactive recommendation flow: choose genre, sort mode, count.
     private static void getRecommendations(Scanner scanner, User user, MovieLibrary library, RecommendationEngine engine) {
         ArrayList<String> genres = engine.listGenres(library);
-        System.out.println("--- Choose Genre ---");
+        System.out.println("\n--- Choose Genre ---");
         for (int i = 0; i < genres.size(); i++) {
             System.out.println((i + 1) + ". " + genres.get(i));
         }
@@ -276,22 +276,29 @@ public class Main {
         String chosenGenre = "ALL";
         int genreChoice = 0;
         while (true) {
-            System.out.print("Enter choice (default: All): ");
+            System.out.print("Enter choice: ");
             String genreChoiceText = scanner.nextLine().trim();
 
             try {
                 genreChoice = Integer.parseInt(genreChoiceText);
-                break;
+                if (genreChoice >= 1 && genreChoice <= genres.size()) {
+                    chosenGenre = genres.get(genreChoice - 1);
+                    break;
+                } else if (genreChoice > genres.size() + 1 || genreChoice < 0) {
+                    System.out.println("Please enter a number between 1 and " + (genres.size() + 1) + ".");
+                } else {  //All
+                    break;
+                }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid choice.");
+                System.out.println("Please enter a valid number.");
             }
 
         }
-        if (genreChoice >= 1 && genreChoice <= genres.size()) {
-            chosenGenre = genres.get(genreChoice - 1);
-        }
+//        if (genreChoice >= 1 && genreChoice <= genres.size()) {
+//            chosenGenre = genres.get(genreChoice - 1);
+//        }
 
-        System.out.println("--- Sort Options ---");
+        System.out.println("\n--- Sort Options ---");
         System.out.println("1. Rating high to low");
         System.out.println("2. Rating low to high");
         System.out.println("3. Year new to old");
@@ -304,13 +311,18 @@ public class Main {
         int sortChoice = 1;
         while (true) {
 
-            System.out.print("Enter choice (default: 1): ");
+            System.out.print("Enter choice: ");
             String sortChoiceText = scanner.nextLine().trim();
             try {
                 sortChoice = Integer.parseInt(sortChoiceText);
-                break;
+                if (sortChoice >= 1 && sortChoice <= 5) {
+                    break;
+                } else {
+                    System.out.println("Please enter a number between 1 and 5.");
+                }
+
             } catch (NumberFormatException e) {
-                System.out.println("Invalid choice.");
+                System.out.println("Please enter a valid number.");
             }
 
         }
@@ -326,29 +338,33 @@ public class Main {
 //        }
         int number = 0;
         while (true) {
-            System.out.print("How many recommendations? (default 5, max 10): ");
+            System.out.print("How many recommendations? (max 10): ");
             String text = scanner.nextLine().trim();
 
             try {
                 number = Integer.parseInt(text);
-                break;
+                if (number >= 1) {
+                    break;
+                } else {
+                    System.out.println("Please enter a number between 1 and 10.");
+                }
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a number between 1 and 10.");
+                System.out.println("Please enter a valid number.");
             }
         }
-        if (number <= 0) {
-            number = 5;
-        }
-        if (number > 10) {
-            number = 10;
-        }
+//        if (number <= 0) {
+//            number = 5;
+//        }
+//        if (number > 10) {
+//            number = 10;
+//        }
 
         ArrayList<Movie> recs = engine.recommend(user, library, chosenGenre, sortMode, number);
         if (recs.isEmpty()) {
             System.out.println("No recommendations available.");
             return;
         }
-        System.out.println("--- Recommendations ---");
+        System.out.println("\n--- Recommendations ---");
         for (int i = 0; i < recs.size(); i++) {
             Movie movie = recs.get(i);
             System.out.println((i + 1) + ". " + movie.shortDescription());
