@@ -1,7 +1,5 @@
 // Represents one movie record loaded from CSV.
-public class
-
-Movie {
+public class Movie {
     private String id;
     private String title;
     private String genre;

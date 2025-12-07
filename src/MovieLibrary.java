@@ -11,7 +11,7 @@ public class MovieLibrary {
     private HashMap<String, Movie> movieMap;
 
     public MovieLibrary() {
-        movies = new ArrayList<Movie>();
+        movies = new ArrayList<>();
         movieMap = new HashMap<String, Movie>();
     }
 

@@ -43,7 +43,7 @@ public class UserStorage {
 
     // Split watchlist string "id;id;id" into a list.
     private ArrayList<String> parseWatchlist(String text) {
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         String trimmed = text.trim();
         if (trimmed.length() == 0) {
             return list;
@@ -59,7 +59,7 @@ public class UserStorage {
 
     // Split history string "id@date;id@date" into History records.
     private ArrayList<History> parseHistory(String text) {
-        ArrayList<History> list = new ArrayList<History>();
+        ArrayList<History> list = new ArrayList<>();
         String trimmed = text.trim();
         if (trimmed.length() == 0) {
             return list;

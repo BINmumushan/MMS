@@ -5,7 +5,7 @@ public class Watchlist {
     private ArrayList<String> items;
 
     public Watchlist() {
-        items = new ArrayList<String>();
+        items = new ArrayList<>();
     }
 
     public Watchlist(ArrayList<String> existing) {

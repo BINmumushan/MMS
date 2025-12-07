@@ -5,7 +5,7 @@ public class HistoryLog {
     private ArrayList<History> entries;
 
     public HistoryLog() {
-        entries = new ArrayList<History>();
+        entries = new ArrayList<>();
     }
 
     public HistoryLog(ArrayList<History> existing) {

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 
 // Builds recommendation lists with genre filter and sort modes.
 public class RecommendationEngine {
@@ -9,9 +8,9 @@ public class RecommendationEngine {
     public static final String MODE_YEAR_ASC = "year_asc";
     public static final String MODE_RANDOM = "random";
 
-    // Collect distinct genres from all movies, sorted alphabetically.
+    // Collect distinct genres from all movies, sorted alphabetically, used in Main.
     public ArrayList<String> listGenres(MovieLibrary library) {
-        ArrayList<String> genres = new ArrayList<String>();
+        ArrayList<String> genres = new ArrayList<>();
         ArrayList<Movie> movies = library.getAllMovies();
         for (int i = 0; i < movies.size(); i++) {
             String genre = movies.get(i).getGenre();
@@ -19,15 +18,14 @@ public class RecommendationEngine {
                 genres.add(genre);
             }
         }
-        sortStrings(genres);
+        sortStrings(genres); //alphabetical
         return genres;
     }
 
     // Main entry: filter by genre (or ALL), exclude watched/watchlist, then sort.
     public ArrayList<Movie> recommend(User user, MovieLibrary library, String genreFilter, String sortMode, int n) {
-        String mode = sortMode;
         boolean allGenres = genreFilter == null || genreFilter.length() == 0;
-        ArrayList<Movie> candidates = new ArrayList<Movie>();
+        ArrayList<Movie> candidates = new ArrayList<>();
         ArrayList<Movie> all = library.getAllMovies();
         for (int i = 0; i < all.size(); i++) {
             Movie movie = all.get(i);
@@ -43,9 +41,9 @@ public class RecommendationEngine {
             return candidates;
         }
 
-        sortMovies(candidates, mode);
+        sortMovies(candidates, sortMode);
 
-        ArrayList<Movie> result = new ArrayList<Movie>();
+        ArrayList<Movie> result = new ArrayList<>();   //top-n
         for (int i = 0; i < candidates.size() && result.size() < n; i++) {
             result.add(candidates.get(i));
         }
@@ -135,11 +133,10 @@ public class RecommendationEngine {
     }
 
     private boolean isExcluded(User user, String movieId) {
-        String id = movieId.toUpperCase();
-        if (user.getWatchlist().contains(id)) {
+        if (user.getWatchlist().contains(movieId)) {
             return true;
         }
-        if (user.getHistory().containsMovie(id)) {
+        if (user.hasWatched(movieId)) {
             return true;
         }
         return false;

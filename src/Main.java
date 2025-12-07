@@ -35,7 +35,7 @@ public class Main {
                 showUserMenu(currentUser);
                 String choice = scanner.nextLine().trim();   //trim avoid space
                 switch (choice) {
-                    case "1" -> browseMovies(movieLibrary);
+                    case "1" -> browseMovies(movieLibrary, currentUser);
                     case "2" -> {
                         addMovieToWatchlist(scanner, currentUser, movieLibrary);
                         userStorage.saveUsers(users, USER_FILE);
@@ -115,7 +115,7 @@ public class Main {
 
     // Create new account with password confirmation and length check.
     private static void createAccount(Scanner scanner, HashMap<String, User> users, UserStorage storage) {
-        System.out.println("--- Create Account ---");
+        System.out.println("\n--- Create Account ---");
         System.out.print("Choose a username: ");
         String username = scanner.nextLine().trim();
         if (username.length() == 0) {
@@ -145,12 +145,16 @@ public class Main {
     }
 
     // List all movies with a short description.
-    private static void browseMovies(MovieLibrary library) {
-        System.out.println("--- All Movies ---");
+    private static void browseMovies(MovieLibrary library, User currentUser) {
+        System.out.println("\n--- All Movies ---");
         ArrayList<Movie> movies = library.getAllMovies();
         for (int i = 0; i < movies.size(); i++) {
             Movie movie = movies.get(i);
-            System.out.println(movie.shortDescription());
+            String status = "";
+            if (currentUser != null && currentUser.hasWatched(movie.getId())) {
+                status = "[watched] ";
+            }
+            System.out.println(status + movie.shortDescription());
         }
     }
 
@@ -161,6 +165,20 @@ public class Main {
         if (movie == null) {
             System.out.println("Movie not found.");
             return;
+        }
+        if (user.hasWatched(id)) {
+            System.out.println("You have watched this movie before.");
+            while (true) {
+                System.out.print("Add to watchlist anyway? (y/n): ");
+                String answer = scanner.nextLine().trim().toLowerCase();
+                if (answer.equals("n")) {
+                    return;
+                }
+                if (answer.equals("y")) {
+                    break;
+                }
+                System.out.println("Please enter y or n.");
+            }
         }
         if (user.addToWatchlist(id)) {
             System.out.println(movie.getTitle() + " (" + movie.getYear() + ") is added to your watchlist.");
@@ -194,7 +212,7 @@ public class Main {
             System.out.println("Watchlist is empty.");
             return;
         }
-        System.out.println("--- Your Watchlist ---");
+        System.out.println("\n--- Your Watchlist ---");
         for (int i = 0; i < items.size(); i++) {
             String id = items.get(i);
             Movie movie = library.getMovieById(id);
@@ -215,6 +233,9 @@ public class Main {
             System.out.println("Movie not found.");
             return;
         }
+        if (user.hasWatched(id)) {
+            System.out.println("You have watched this movie before. Date will be updated.");
+        }
         String date = LocalDate.now().toString();
         user.markWatched(id, date);
         System.out.println("Marked " + movie.getTitle() + " (" + movie.getYear() + ") as watched on " + date + ".");
@@ -226,17 +247,15 @@ public class Main {
             System.out.println("History is empty.");
             return;
         }
-        System.out.println("--- Viewing History ---");
+        System.out.println("\n--- Viewing History ---");
         for (int i = 0; i < entries.size(); i++) {
             History entry = entries.get(i);
             Movie movie = library.getMovieById(entry.getMovieId());
-            String line;
             if (movie == null) {
-                line = (i + 1) + ". " + entry.getMovieId() + " on " + entry.getWatchedDate();
+                System.out.println(entry.getMovieId() + " on " + entry.getWatchedDate());
             } else {
-                line = (i + 1) + ". " + movie.getId() + " - " + movie.getTitle() + " (" + movie.getYear() + ") on " + entry.getWatchedDate();
+                System.out.println(movie.shortDescription() + " on " + entry.getWatchedDate());
             }
-            System.out.println(line);
         }
     }
 
@@ -264,8 +283,7 @@ public class Main {
                     break;
                 }
                 System.out.println("Please enter a number between 1 and " + (genres.size() + 1) + ".");
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Please enter a valid number.");
             }
 
@@ -338,7 +356,7 @@ public class Main {
             return;
         }
         System.out.println("\n--- Recommendations ---");
-        
+
         for (int i = 0; i < recs.size(); i++) {
             Movie movie = recs.get(i);
             System.out.println((i + 1) + ". " + movie.shortDescription());
